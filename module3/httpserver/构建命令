@@ -1,0 +1,24 @@
+# 构建镜像
+docker build -t vincent-httpserver .
+
+# 推送镜像至 Docker 官方镜像仓库
+docker login
+docker tag vincent-httpserver vincentliang07/vincent-httpserver:learning
+docker push vincentliang07/vincent-httpserver:learning
+
+# 本地启动容器
+docker run -d -p 80:80 --name httpserver vincent-httpserver
+
+# 使用 nsenter 进入容器查看 IP 配置
+docker inspect -f '{{.State.Pid}}' httpserver
+56252
+
+sudo nsenter -t 56252 -n ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+22: eth0@if23: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default
+    link/ether 02:42:ac:11:00:02 brd ff:ff:ff:ff:ff:ff link-netnsid 0
+    inet 172.17.0.2/16 brd 172.17.255.255 scope global eth0
+       valid_lft forever preferred_lft forever
